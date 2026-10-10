@@ -6,3 +6,4 @@ public record ChatMessageDto(
     @NotBlank String role,
     @NotBlank String content
 ) {}
+

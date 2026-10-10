@@ -13,3 +13,4 @@ class AiChatServiceTest {
         assertNotNull("true");
     }
 }
+

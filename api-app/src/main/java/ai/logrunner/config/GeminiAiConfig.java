@@ -11,3 +11,4 @@ public class GeminiAiConfig {
         return builder.build();
     }
 }
+

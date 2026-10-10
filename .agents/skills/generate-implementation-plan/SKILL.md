@@ -34,14 +34,14 @@ Use this skill when you are given a Markdown (`.md`) requirement specification f
    - **Integration Contracts**: REST API endpoint URIs, HTTP methods, JSON request payload schemas, and response DTO definitions.
 
 ### 4. Implementation Plan Drafting
-Create an implementation plan document named `implementation-plan-<feature-name>.md` using the following required format:
+Create an implementation plan document named `implementation-plan-<feature-file-name>.md` using the following required format, create the file in same directory as the requirement file for brevity and context.
 
 ```markdown
 # Implementation Plan: [Feature Name]
 
 ## Overview
 Brief summary of the feature, business intent, and technical approach spanning `api-app` (Spring Boot API) and `ui-app` (React UI).
-## name the file name : requirement file name + "-" + implementation-plan.md
+## name the file and place in same directory of requirement file : <requirement file name> + "-" + <implementation-plan>.md
 
 ## Key Technical Decisions
 - **Backend Stack (`api-app`)**: Java version, Spring Boot, Spring Data JPA, Java Records for DTOs, RFC 7807 Problem Details error handling.

@@ -5,5 +5,10 @@ import java.util.List;
 
 public record ChatRequest(
     @NotBlank String message,
-    List<ChatMessageDto> history
+    List<ChatMessageDto> history,
+    String orderDetail,
+    String startDate,
+    String endDate,
+    String timezone,
+    List<ClusterConfigDto> selectedClusters
 ) {}

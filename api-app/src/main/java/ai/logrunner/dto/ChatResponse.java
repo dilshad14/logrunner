@@ -7,3 +7,4 @@ public record ChatResponse(
     String status,
     LocalDateTime timestamp
 ) {}
+

@@ -35,3 +35,17 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### Node / Frontend ###
+node_modules/
+**/node_modules/
+dist/
+**/dist/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.eslintcache
+
+### Database / Environment ###
+*.db
+*.local

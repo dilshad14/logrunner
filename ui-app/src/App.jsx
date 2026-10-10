@@ -1,15 +1,30 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
 import ChatInteractionList from './components/ChatInteractionList';
 import ChatInput from './components/ChatInput';
+import SettingsModal from './components/SettingsModal';
 import { sendChatMessage } from './services/chatService';
+import { loadClusterSettings, saveClusterSettings } from './services/settingsStorage';
 
 function App() {
   const [messages, setMessages] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [clusters, setClusters] = useState([]);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+
+  useEffect(() => {
+    const loaded = loadClusterSettings();
+    setClusters(loaded);
+  }, []);
+
+  const handleSaveClusters = (updatedClusters) => {
+    setClusters(updatedClusters);
+    saveClusterSettings(updatedClusters);
+  };
 
   const handleSendMessage = async (inputObj) => {
     let rawText = typeof inputObj === 'string' ? inputObj : inputObj.text;
+    let selectedClusters = inputObj.selectedClusters || [];
     let paramsSummary = [];
 
     if (typeof inputObj === 'object' && inputObj !== null) {
@@ -17,6 +32,9 @@ function App() {
       if (inputObj.startDate) paramsSummary.push(`Start Time: ${inputObj.startDate}`);
       if (inputObj.endDate) paramsSummary.push(`End Time: ${inputObj.endDate}`);
       if (inputObj.timezone) paramsSummary.push(`Timezone: ${inputObj.timezone}`);
+      if (selectedClusters.length > 0) {
+        paramsSummary.push(`Data Sources: [${selectedClusters.map(c => c.clusterName).join(', ')}]`);
+      }
     }
 
     let userPromptText = rawText;
@@ -31,7 +49,16 @@ function App() {
     setIsLoading(true);
 
     try {
-      const response = await sendChatMessage(userPromptText, historyForApi);
+      const response = await sendChatMessage({
+        message: rawText || 'Correlate and analyze system logs across selected clusters.',
+        orderDetail: inputObj.orderDetail,
+        startDate: inputObj.startDate,
+        endDate: inputObj.endDate,
+        timezone: inputObj.timezone,
+        selectedClusters: selectedClusters,
+        history: historyForApi
+      });
+
       const fullReply = response.reply || '';
 
       // Stream word-by-word into the UI
@@ -40,8 +67,6 @@ function App() {
       const words = fullReply.match(/\S+|\s+/g) || [fullReply];
       let currentContent = '';
       
-      // Initialize assistant message as streaming
-      const assistantIndex = messages.length + 1; // user is at messages.length
       setMessages(prev => [...prev, { role: 'assistant', content: '', isStreaming: true }]);
 
       let wordIdx = 0;
@@ -74,9 +99,20 @@ function App() {
 
   return (
     <div className="app-container">
-      <Header />
+      <Header onOpenSettings={() => setIsSettingsOpen(true)} />
       <ChatInteractionList messages={messages} isLoading={isLoading} />
-      <ChatInput onSendMessage={handleSendMessage} isLoading={isLoading} />
+      <ChatInput
+        onSendMessage={handleSendMessage}
+        isLoading={isLoading}
+        clusters={clusters}
+        onOpenSettings={() => setIsSettingsOpen(true)}
+      />
+      <SettingsModal
+        isOpen={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
+        clusters={clusters}
+        onSaveClusters={handleSaveClusters}
+      />
     </div>
   );
 }
